@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  db:
+    image: mariadb:10.5.9
+    volumes:
+      - db:/var/lib/mysql
+    networks:
+      - default
+    environment:
+      - MYSQL_ROOT_PASSWORD
+    restart: always
+
+  memcached:
+    image: memcached:1.6.9
+    command: memcached -m 256
+    networks:
+      - default
+    restart: always
+
+  seafile:
+    image: seafileltd/seafile-mc:8.0.4
+    volumes:
+      - seafile-data:/shared
+    networks:
+      - default
+      - proxy
+    environment:
+      - DB_HOST=db
+      - DB_ROOT_PASSWD
+      - SEAFILE_ADMIN_EMAIL
+      - SEAFILE_ADMIN_PASSWORD
+      - VIRTUAL_HOST
+      - LETSENCRYPT_HOST
+      - LETSENCRYPT_EMAIL
+    depends_on:
+      - db
+      - memcached
+    restart: always
+
+volumes:
+  db:
+  seafile-data:
+
+networks:
+  proxy:
+    external:
+      name: nginx-proxy

@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  db:
+    image: mariadb:10.5.9
+    volumes:
+      - db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=password1234
+    restart: "no"
+
+  memcached:
+    image: memcached:1.6.9
+    command: memcached -m 256
+    restart: "no"
+
+  seafile:
+    image: seafileltd/seafile-mc:8.0.4
+    volumes:
+      - seafile-data:/shared
+    ports:
+      - "8080:80"
+    environment:
+      - DB_HOST=db
+      - DB_ROOT_PASSWD=password1234
+      - SEAFILE_ADMIN_EMAIL=example@example.com
+      - SEAFILE_ADMIN_PASSWORD=password1234
+    depends_on:
+      - db
+      - memcached
+    restart: "no"
+
+volumes:
+  db:
+  seafile-data:
