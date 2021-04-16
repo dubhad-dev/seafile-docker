@@ -15,7 +15,7 @@ services:
     restart: "no"
 
   seafile:
-    image: seafileltd/seafile-mc:8.0.4
+    build: seafile
     volumes:
       - seafile-data:/shared
     ports:
